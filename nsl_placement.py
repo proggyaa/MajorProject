@@ -16,7 +16,7 @@
 import copy
 import networkx as nx
 from operator import itemgetter, attrgetter, methodcaller 
-# import graph_generator as ggen
+import graph_generator as ggen
 
 ranked_nodes_cpu = []
 nsl_graph_red = {} #reduced nsl graph
@@ -97,7 +97,6 @@ def calculate_resource_potential(substrate,resource_type):
         nodes[i]["node_potential"] = local_rsc_capacity #+ (nodes[i]["degree_centrality"]*5)
         #print("+++",local_rsc_capacity)
         #print("+++",nodes[i]["degree_centrality"])
-
 
 def reduce_nslr_graph(nslr):
     '''

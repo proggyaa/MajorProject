@@ -84,6 +84,11 @@ class NSLR():
         self.nsl_graph_reduced = {}
         self.end_time = 0
         self.bandera = random.randint(1,100)
+        
+        #add priority parameter here
+        #adding request incoming time parameter
+        self.incoming_time = 0
+        self.priority = None
 
     def set_nsl_graph_reduced(self,reduced_graph):
         self.nsl_graph_reduced = reduced_graph

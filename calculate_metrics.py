@@ -1,4 +1,4 @@
-def calculate_profit_nodes(nslr,end_simulation_time):
+def calculate_profit_nodes(nslr,end_simulation_time, service_type_priority):
     #Calculates profit per time unit and then multiplies it by the nslr op. time
     #profit = revenue-cost 
     cost = 0
@@ -23,8 +23,21 @@ def calculate_profit_nodes(nslr,end_simulation_time):
     else:
         time = nslr.operation_time
 
+    #TODO: Check what is the unit of the times. 
+    # if nslr.end_time - nslr.incoming_time > 1:
+    #     print("[DEBUG] REQUEST.START TIME", nslr.incoming_time)
+    #     print("[DEBUG] REQUEST.END TIME", nslr.end_time)
+        
+    #TODO: add req delay to cost
+    cost_check = (nslr.end_time - nslr.incoming_time) * service_type_priority[nslr.service_type]
+    print("[DEBUG] COST CHECK", cost, cost + cost_check)
+    # add a threshold maybe else if priority if too high then even a small delay [normalise this]
+    #update cost function here cost += (delay * priority) ?
     profit = (revenue-cost)*time 
-    return profit
+    # profit = (revenue-(cost + cost_check))*time 
+    #TODO: profit and reward are separate
+    reward = (revenue - (cost + cost_check)) * time
+    return reward, profit
 
 def calculate_profit_links(nslr,end_simulation_time):
     #Calculates profit per time unit and then multiplies it by the nslr op. time
@@ -81,50 +94,3 @@ def calculate_request_utilization(nslr,end_simulation_time,substrate):
     links_utl = bw_sum*time  
 
     return edge_utl, central_utl, links_utl
-
-# def calculate_request_utilization(nslr,end_simulation_time,substrate):
-#     '''
-#         Calculates resource utilization of the current requests
-#         utilization: the time the resource was busy
-#         profit = revenue-cost 
-#     '''
-#     utl = 0 
-#     vnfs = nslr.nsl_graph_reduced["vnodes"]
-#     vlinks = nslr.nsl_graph_reduced["vlinks"]  
-#     time = 0.0
-#     central_sum = 0
-#     # local_sum = 0 
-#     edge_sum = 0
-#     bw_sum = 0
-#     # print("substrate",substrate["nodes"])
-#     # print("vnfs",vnfs)
-#     for vnf in vnfs:
-#         # print("**+",substrate["nodes"][vnf["mapped_to"]]["type"])
-#         if substrate["graph"]["nodes"][vnf["mapped_to"]]["type"] == 0:
-#             central_sum += vnf["cpu"]
-#         # elif substrate["nodes"][vnf["mapped_to"]]["type"] == 1:
-#         #     local_sum += vnf["cpu"]
-#         elif substrate["graph"]["nodes"][vnf["mapped_to"]]["type"] == 1:
-#             edge_sum += vnf["cpu"]
-        
-#         # else:
-#         #     edge_sum += vnf["cpu"]  
-    
-#     for vlink in vlinks:
-#         bw_sum += vlink["bw"]        
-
-#     if nslr.end_time > end_simulation_time:
-#         #si es mayor, se considera la porcion de tiempo hasta acabar la simulacion  
-#         time = nslr.operation_time - (nslr.end_time-end_simulation_time)
-#     else:
-#         time = nslr.operation_time
-#     # print("**++",edge_sum)
-#     edge_utl = edge_sum*time 
-#     # local_utl = local_sum*time 
-#     central_utl = central_sum*time
-#     # print("**++",central_utl)
-#     links_utl = bw_sum*time 
-#     # print("**++",edge_utl)
-#     return edge_utl, central_utl, links_utl
-
-

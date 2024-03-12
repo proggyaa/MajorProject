@@ -4,8 +4,8 @@ import math
 import nsl_request
 import nsl_placement
 import substrate_graphs
-import copy
-import calculate_metrics 
+import calculate_metrics
+import copy 
 import ql
 import dql
 #import telegram_bot as bot
@@ -14,7 +14,8 @@ import time
 # import bisect
 #simulation parameters
 # seed = 0
-repetitions = 33 #33
+#TODO:revert to og
+repetitions = 3 #33
 twindow_length = 1
 # embb_arrival_rate = 10 #5#1#2 #reqXsecond
 # urllc_arrival_rate = 40 #5#2.5 #reqXsecond
@@ -23,6 +24,7 @@ twindow_length = 1
 embb_arrival_rate = 0
 urllc_arrival_rate = 0
 miot_arrival_rate = 0 
+#TODO: Poisson distribution see for arrival rate
 arrival_rates = [20] #[100,80,60,40,30,25,20,15,10,7,5,3,1] #20
 
 mean_operation_time = 15
@@ -33,7 +35,9 @@ bw_initial = 0
 agente = None
 
 #RL-specific parameters
-episodes = 350 #240
+#TODO:uncomment og
+# episodes = 350 #240
+episodes = 100
 
 avble_edge_size = 10
 avble_central_size = 10
@@ -208,12 +212,13 @@ class Sim:
         # self.eventos.insert(index,evt)
         # self.eventos[index:index] = [evt]
 
+        #TODO: take event.initio and set it as arrival time for request 
         if evt.tipo == "arrival":            
             #agregar nslrs en window list
             self.total_reqs += 1
             service_type = evt.extra["service_type"]#
             request = nsl_request.get_nslr(self.total_reqs,service_type,mean_operation_time)#
-
+            request.incoming_time = evt.inicio
             if evt.extra["service_type"] == "embb":
                 self.total_embb_reqs += 1
                 self.window_req_list[0].append(copy.deepcopy(request))#
@@ -352,12 +357,20 @@ def prioritizer(window_req_list,action_index): #v2
     action2.append([action[0],round(action[0]*len(window_req_list[0])),0]) #[pctg,cant,tipo] ej:[0.75,75,0]
     action2.append([action[1],round(action[1]*len(window_req_list[1])),1])
     action2.append([action[2],round(action[2]*len(window_req_list[2])),2])
+    
+    #priority of action in window req list according to the priority in the current action set
 
     #de acuerdo a "action", ordenar "action2"
     action2.sort(key=takeFirst,reverse=True)
 
+    print("[DEBUG] Actions list", action2)
+    #set priority acc to service type of request
+    service_type_priority = {}
+    
     for j in action2:
-        
+        if window_req_list[j[2]]:
+            service_type_priority[window_req_list[j[2]][0].service_type] = j[0]
+            
         if j[0]==1:
             granted_req_list += window_req_list[j[2]]
             
@@ -368,11 +381,12 @@ def prioritizer(window_req_list,action_index): #v2
                 else:
                     remaining_req_list.append(window_req_list[j[2]][i])      
 
-    return granted_req_list, remaining_req_list #v6
+    print("[DEBUG] SERVICE TYPE PRIORITY", service_type_priority)
+    return service_type_priority, granted_req_list, remaining_req_list #v6
     #return granted_req_list+remaining_req_list, remaining_req_list #v1
 
 def update_resources(substrate,nslr,kill):
-    
+    #nslr: request
     nodes = substrate.graph["nodes"]
     links = substrate.graph["links"]   
     for vnf in nslr.nsl_graph_reduced["vnodes"]:#se recorre los nodos del grafo reducido del nslr aceptado    
@@ -407,7 +421,7 @@ def update_resources(substrate,nslr,kill):
             except StopIteration:
                 pass
 
-def resource_allocation(cn): #cn=controller
+def resource_allocation(cn, service_type_priority): #cn=controller
     #hace allocation para el conjunto de nslrs capturadas en una ventana de tiempo
     #las metricas calculadas aqui corresponden a un step
      
@@ -430,7 +444,8 @@ def resource_allocation(cn): #cn=controller
     max_node_profit = substrate.graph["max_cpu_profit"]*sim.run_till
     max_link_profit = substrate.graph["max_bw_profit"]*sim.run_till
     max_profit = max_link_profit + max_node_profit
-
+    reward = 0
+    
     for req in sim.granted_req_list:
         # print("**",req.service_type,req.nsl_graph)
         sim.attended_reqs += 1        
@@ -445,7 +460,7 @@ def resource_allocation(cn): #cn=controller
 
             #calculo de metricas (profit, acpt_rate, contadores)            
             sim.accepted_reqs += 1
-            profit_nodes = calculate_metrics.calculate_profit_nodes(req,end_simulation_time)
+            reward, profit_nodes = calculate_metrics.calculate_profit_nodes(req,end_simulation_time, service_type_priority)
             profit_links = calculate_metrics.calculate_profit_links(req,end_simulation_time)*10    
             step_profit += (profit_nodes + profit_links)/max_profit #the total profit in this step is the reward
             step_link_profit += profit_links/max_link_profit
@@ -474,7 +489,7 @@ def resource_allocation(cn): #cn=controller
             #step_total_utl += (a+b+(c*10))/((edge_initial+centralized_initial+bw_initial)*end_simulation_time)
             step_total_utl += (step_node_utl + step_links_bw_utl)/2
              
-    return step_profit,step_node_profit,step_link_profit,step_embb_profit,step_urllc_profit,step_miot_profit,step_total_utl,step_node_utl,step_links_bw_utl,step_edge_cpu_utl,step_central_cpu_utl
+    return reward, step_profit,step_node_profit,step_link_profit,step_embb_profit,step_urllc_profit,step_miot_profit,step_total_utl,step_node_utl,step_links_bw_utl,step_edge_cpu_utl,step_central_cpu_utl
 
 def get_code(value):   
     cod = 0
@@ -559,8 +574,8 @@ def translateStateToIndex(state):
 
     return int(index)
 
-
-def get_state(substrate,simulation):    
+def get_state(substrate,simulation):   
+    #mapping current state to a certain state code according to resources available 
     cod_avble_edge = get_code(substrate.graph["edge_cpu"]/edge_initial)
     cod_avble_central = get_code(substrate.graph["centralized_cpu"]/centralized_initial)
     cod_avble_bw = get_code(substrate.graph["bw"]/bw_initial)
@@ -634,7 +649,6 @@ def func_arrival(c,evt): #NSL arrival
     inter_arrival_time = get_interarrival_time(arrival_rate)
     s.add_event(s.create_event(tipo="arrival",inicio=s.horario+inter_arrival_time, extra={"service_type":service_type,"arrival_rate":arrival_rate}, f=func_arrival))
 
-
 contador_termination = 0
 
 def func_terminate(c,evt):
@@ -672,9 +686,9 @@ def func_twindow(c,evt):
         a = evt.extra["action"]
         #print("##agent",agente.last_state," ",agente.last_action)        
       
-    sim.granted_req_list, remaining_req_list = prioritizer(sim.window_req_list, a) #se filtra la lista de reqs dependiendo de la accion
+    service_type_priority, sim.granted_req_list, remaining_req_list = prioritizer(sim.window_req_list, a) #se filtra la lista de reqs dependiendo de la accion
     #la lista se envia al modulo de Resource Allocation
-    step_profit,step_node_profit,step_link_profit,step_embb_profit,step_urllc_profit,step_miot_profit,step_total_utl,step_node_utl,step_links_bw_utl,step_edge_cpu_utl,step_central_cpu_utl = resource_allocation(c)
+    reward, step_profit,step_node_profit,step_link_profit,step_embb_profit,step_urllc_profit,step_miot_profit,step_total_utl,step_node_utl,step_links_bw_utl,step_edge_cpu_utl,step_central_cpu_utl = resource_allocation(c, service_type_priority)
     c.total_profit += step_profit
     c.node_profit += step_node_profit
     c.link_profit += step_link_profit
@@ -687,7 +701,8 @@ def func_twindow(c,evt):
     c.central_utl += step_central_cpu_utl
     c.link_utl += step_links_bw_utl
     
-    r = step_profit
+    # r = step_profit
+    r = reward
     next_state = get_state(c.substrate,c.simulation) #getting the next state    
     
     #s_ = translateStateToIndex(next_state) #getting index of the next state
@@ -794,11 +809,14 @@ def main():
             urllc_utl_rep.append([])
             miot_utl_rep.append([])
         
+        #reward = []
+            
         for i in range(repetitions):
             #agente = ql.Qagent(0.9, 0.9, 0.9, episodes, n_states, n_actions) #(alpha, gamma, epsilon, episodes, n_states, n_actions)
             agente = dql.Agent(9,n_actions)
 
             for j in range(episodes):
+                #rewards = [1, 2]
                 agente.handle_episode_start()
 
                 print("\n","episode:",j,"\n")
@@ -838,7 +856,9 @@ def main():
 
             #bot.sendMessage("Repetition " + str(i) + " finishes!")
             
-            f = open("deepsara_"+str(m)+"_16BA_9de10sta_30actv22_wWWWW2_maxexpl05_btchsz15_rpsrtsz400_anrate1-400_1h150ns_350epi_prioritizerv6.txt","w+")
+            #reward = [1]
+            #reward = [1, 2]
+            f = open("deepsara_"+str(m)+"_output_modified.txt","w+")
 
             f.write("Repetition: "+str(i)+"\n")
             f.write("**Reward:\n")
@@ -884,6 +904,7 @@ def main():
             f.write("**miot_utl_rep:\n")
             f.write(str(miot_utl_rep)+"\n\n")        
             f.close()
+            #TODO: Plot these values in graph as given in the paper end
 
 if __name__ == '__main__':
     #bot.sendMessage("Simulation starts!")

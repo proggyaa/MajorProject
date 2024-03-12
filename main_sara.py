@@ -284,8 +284,14 @@ def prioritizer(window_req_list,action_index): ##
     granted_req_list = []
     remaining_req_list = []
     
+    # 1 req embb -> priority 10 * 1
+    # 20 req embb -> priority 10 * 20 
+    
+    # [10, 5, 1]
     #action = (0.75,1,0.25) -> (cant1,cant2,cant3) 
     #traducir action en porcentage a cantidades (entero más cercano)
+    
+    #Paper mentions they use time and weight but here they aren't using time ????
     action2.append([action[0],round(action[0]*len(window_req_list[0])),0]) #[pctg,cant,tipo] ej:[0.75,75,0]
     action2.append([action[1],round(action[1]*len(window_req_list[1])),1])
     action2.append([action[2],round(action[2]*len(window_req_list[2])),2])
@@ -377,6 +383,8 @@ def resource_allocation(cn): #cn=controller
         sim.attended_reqs += 1 
             
         rejected = nsl_placement.nsl_placement(req,substrate)#mapping
+
+        #reward -= (delay) * f(priority) 
 
         if not rejected: 
             #instantiation y adicion de evento de termination

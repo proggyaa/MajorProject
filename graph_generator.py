@@ -59,6 +59,7 @@ def ba_graph(name,n):
         # else:
         #     node_type = 0 #centralized node
         
+        #picking a random type for the node. Node 1 can be an edge/local/central, node 2 can be edge/local/central, etc
         node_type = random.choice(lista)
         print("node type:", node_type)    
         G.nodes[n]["type"] = node_type 
