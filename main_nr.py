@@ -5,7 +5,7 @@ import nsl_request
 import nsl_placement
 import substrate_graphs
 import copy
-import calculate_metrics 
+import DeepSARA.calculate_metrics_modified as calculate_metrics_modified 
 import ql as qagent
 import telegram_bot as bot
 import time
@@ -282,8 +282,8 @@ def resource_allocation(cn): #cn=controller
 
             #calculo de metricas (profit, acpt_rate, contadores)            
             sim.accepted_reqs += 1
-            profit_nodes = calculate_metrics.calculate_profit_nodes(req,end_simulation_time)
-            profit_links = calculate_metrics.calculate_profit_links(req,end_simulation_time)*10    
+            profit_nodes = calculate_metrics_modified.calculate_profit_nodes(req,end_simulation_time)
+            profit_links = calculate_metrics_modified.calculate_profit_links(req,end_simulation_time)*10    
             step_profit += (profit_nodes + profit_links)/max_profit #the total profit in this step is the reward
             step_link_profit += profit_links/max_link_profit
             step_node_profit += profit_nodes/max_node_profit
@@ -300,7 +300,7 @@ def resource_allocation(cn): #cn=controller
                 sim.miot_accepted_reqs += 1
                 step_miot_profit += profit_nodes/max_node_profit                       
             
-            a,b,c = calculate_metrics.calculate_request_utilization(req,end_simulation_time,substrate)
+            a,b,c = calculate_metrics_modified.calculate_request_utilization(req,end_simulation_time,substrate)
             step_edge_cpu_utl += a/(edge_initial*end_simulation_time)
             step_central_cpu_utl += b/(centralized_initial*end_simulation_time)
             step_links_bw_utl += c*10/(bw_initial*end_simulation_time)
