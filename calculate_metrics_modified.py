@@ -35,7 +35,7 @@ def calculate_profit_nodes(nslr,end_simulation_time, service_type_priority):
     profit = (revenue-cost)*time
     # profit = (revenue-(cost + cost_check))*time 
     #TODO: profit and reward are separate
-    reward = -(cost + cost_check) * time
+    reward = -cost_check 
     return reward, profit
 
 def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
@@ -69,7 +69,7 @@ def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
     #TODO: [Ipsita] Check output with our old reward function modification [100, 240 iterations]
     # reward = (revenue - (cost + cost_check)) * time
     profit = (revenue-cost)*time
-    reward = -(cost + cost_check) * time
+    reward = -cost_check
     return reward, profit
 
 

@@ -11,6 +11,8 @@ from config import episodes, repetitions
 episodes = str(episodes)
 repetitions = str(repetitions)
 
+print("[DEBUG]", episodes, repetitions)
+
 profit_line_number = 3
 acpt_rate_line_number = 27
 res_utl_line_number = 42
@@ -49,6 +51,7 @@ arrival_rate = "20"
 profit_nr = deepsara_profit
 profit_nr_modified = deepsara_modified_profit
 
+print(len(profit_nr))
 # profit_rl = profit_rl + profit_rl + profit_rl + profit_rl
 # profit_nr = profit_nr + profit_nr + profit_nr + profit_nr
 # profit_aar = profit_aar + profit_aar + profit_aar + profit_aar
@@ -345,7 +348,7 @@ plt.ylabel('Centralized CPU Utilization')
 plt.title('Time Step Centralized Resource Utilization')
 plt.legend()
 #plt.show()
-plt.savefig("Output_Plots\\time_step_centralutl.png")    
+plt.savefig("Output_Plots\\time_step_centralutl_EPISODES_"+ episodes + "_REP"+ repetitions + ".png")    
 plt.close()
 
 # Edge nodes Utilization
@@ -357,7 +360,7 @@ plt.ylabel('Edge CPU Utilization')
 plt.title('Time Step Edge Resource Utilization')
 plt.legend()
 #plt.show()
-plt.savefig("Output_Plots\\time_step_edgeutl.png") #    
+plt.savefig("Output_Plots\\time_step_edgeutl_EPISODES_"+ episodes + "_REP"+ repetitions + ".png") #    
 plt.close()
 
 # BW Utilization
@@ -369,7 +372,7 @@ plt.ylabel('Bandwidth Utilization')
 # plt.title('Time Step Bandwidth Utilization')
 plt.legend()
 #plt.show()
-plt.savefig("Output_Plots\\time_step_bwutl.png",bbox_inches = 'tight') #    
+plt.savefig("Output_Plots\\time_step_bwutl_EPISODES_"+ episodes + "_REP"+ repetitions + ".png",bbox_inches = 'tight') #    
 plt.close()
 
 

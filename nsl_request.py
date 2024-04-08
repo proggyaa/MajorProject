@@ -85,8 +85,8 @@ class NSLR():
         self.end_time = 0
         self.bandera = random.randint(1,100)
         
-        #add priority parameter here
-        #adding request incoming time parameter
+        #TODO:add priority parameter here
+        #TODO:adding request incoming time parameter
         self.incoming_time = 0
         self.priority = None
 

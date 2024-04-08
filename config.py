@@ -1,3 +1,3 @@
 #TODO:revert to og
-repetitions = 3 #33
-episodes = 240
+repetitions = 1 #33
+episodes = 1

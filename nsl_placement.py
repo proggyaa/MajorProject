@@ -43,7 +43,7 @@ def nsl_placement(nslr, substrate):
     ################### vnfs admission #################
     rejected = False
     already = [] #list of nodes that already hold a vnode
-    for v in vnodes:
+    for v in vnodes: #vnodes are sorted based on the number of backups available
         if rejected:
             break
         for n in ranked_nodes_cpu:  
@@ -122,6 +122,7 @@ def reduce_nslr_graph(nslr):
     edge_vnfs = sorted(edge_vnfs, key=itemgetter("backup"))
 
     #3. Agrupar vnfs que se instanciaran en un mismo nodo fisico:
+    #TODO: SEE group vnfs based on number of backups [WHY?????]
     nsl_graph_red["vnodes"] = []
     group_vnfs(centralized_vnfs,0)
     # group_vnfs(local_vnfs,1)
@@ -140,6 +141,7 @@ def group_vnfs(vnfs_list,node_type):
     '''
         creates different vnodes and adds them to the reduced graph
     '''
+    #Grouping nodes based on number of backups??? [WHY????]
     vnode = {}
     vnode["vnfs"] = [] #ids de las vnfs que conforman este vnode
     vnode["type"] = node_type
@@ -178,18 +180,27 @@ def group_vnfs(vnfs_list,node_type):
                 vnode["id"]=cont
                 nsl_graph_red["vnodes"].append(vnode.copy())
                 cont += 1
-
+    # print("[DEBUG][REDUCED GRAPH FOR A REQUEST]", nsl_graph_red)
     # return nsl_graph_red
 
 def new_vlinks(nsl_graph_red, nsl_graph):
     vnfs = nsl_graph["vnfs"]
+    # print('[NSL_GRAPH]', nsl_graph, '[VNFs]', vnfs)
     vnodes = nsl_graph_red["vnodes"]
     new_vlink = {}
-    for vlink in nsl_graph["vlinks"]:     
+    # takes all the links in between grouped nodes
+    for vlink in nsl_graph["vlinks"]:
+        #The next(....) basically means this
+        # for vnf in vnfs:
+        #     if vnf["id"] == vlink["source"]:
+        #         source = vnf
+        #         break
+        #source/target : vnf of form described in nsl_request.py
         source = next(vnf for vnf in vnfs if vnf["id"]==vlink["source"])
         target = next(vnf for vnf in vnfs if vnf["id"]==vlink["target"])
         #si src y target son del mismo tipo y son del mismo backup, entonces no haga nada (vlink no se considera)
         if source["type"] == target["type"] and source["backup"] == target["backup"]:
+            #they have been grouped together so no point in adding a link between them
             pass
         else: #caso contrario vlink si se considera, ya que el par de vnfs estan en vnodes distintos
             new_src = next(vnode for vnode in vnodes if source["id"] in vnode["vnfs"])
@@ -197,7 +208,7 @@ def new_vlinks(nsl_graph_red, nsl_graph):
             new_vlink = {"source":new_src["id"],"target":new_tgt["id"],"bw":vlink["bw"]}
             nsl_graph_red["vlinks"].append(new_vlink)
 
-
+#analyse links of the reduced graph
 def analyze_links(nsl_graph,substrate):
     '''
     Toma la decision de aceptar o rechazar basado en shortest path
@@ -210,7 +221,7 @@ def analyze_links(nsl_graph,substrate):
     links = copy.deepcopy(substrate.graph["links"])#copia para trabajar temporalmente con ella
     reject = False
     max_hops = 5
-    vlinks = nsl_graph["vlinks"]
+    vlinks = nsl_graph["vlinks"] #nsl_graph = nsl_graph_red
     vnfs = nsl_graph["vnodes"]
     for vlink in vlinks:
         substrate_src = next(vnf["mapped_to"] for vnf in vnfs if vnf["id"] == vlink["source"]) 
@@ -234,7 +245,7 @@ def analyze_links(nsl_graph,substrate):
                     link = next(lk for lk in links if ( (lk["source"]==path[l] and lk["target"]==path[l+1]) or (lk["source"]==path[l+1] and lk["target"]==path[l]) ) )
                     # print("*",path[l],path[l+1])
                     # print("link:",link["bw"])
-                    if vlink["bw"] <= link["bw"]: #hay suficiente bw                        
+                    if vlink["bw"] <= link["bw"]: #has suficiente bw                        
                         link["bw"] -= vlink["bw"] #resource is updated
                         # enough bw                       
                     else:# not enough bw
