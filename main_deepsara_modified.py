@@ -446,7 +446,7 @@ def prioritizer(window_req_list, action_index):  # v2
                 else:
                     remaining_req_list.append(window_req_list[j[2]][i])
 
-    # print("[DEBUG] SERVICE TYPE PRIORITY", service_type_priority)
+    print("[DEBUG] SERVICE TYPE PRIORITY", service_type_priority)
     return service_type_priority, granted_req_list, remaining_req_list  # v6
     # return granted_req_list+remaining_req_list, remaining_req_list #v1
 
@@ -527,7 +527,7 @@ def resource_allocation(cn, service_type_priority):  # cn=controller
     step_node_utl = 0
     step_total_utl = 0
     end_simulation_time = sim.run_till
-    # TODO: See how max profit is calculated
+    # TODO: See how max profit is calculated - hardcoded in substrate graph file
     max_node_profit = substrate.graph["max_cpu_profit"] * sim.run_till
     max_link_profit = substrate.graph["max_bw_profit"] * sim.run_till
     max_profit = max_link_profit + max_node_profit

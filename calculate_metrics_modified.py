@@ -35,7 +35,7 @@ def calculate_profit_nodes(nslr,end_simulation_time, service_type_priority):
     profit = (revenue-cost)*time
     # profit = (revenue-(cost + cost_check))*time 
     #TODO: profit and reward are separate
-    reward = profit - (cost_check * cost)
+    reward = profit - cost_check
     return reward, profit
 
 def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
@@ -62,6 +62,8 @@ def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
     else:
         time = nslr.operation_time
 
+    # print servie type and priority 
+    # print("[SERVICE TYPE]", nslr.service_type, "[PRIORITY]", service_type_priority[nslr.service_type])
     cost_check = (nslr.end_time - nslr.incoming_time) * service_type_priority[nslr.service_type]
 
     #10 unit penalty -> -10
@@ -69,7 +71,7 @@ def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
     #TODO: [Ipsita] Check output with our old reward function modification [100, 240 iterations]
     # reward = (revenue - (cost + cost_check)) * time
     profit = (revenue-cost)*time
-    reward = profit - (cost_check * cost)
+    reward = profit - cost_check
     return reward, profit
 
 
