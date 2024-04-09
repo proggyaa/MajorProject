@@ -17,14 +17,11 @@ def calculate_profit_nodes(nslr,end_simulation_time, service_type_priority):
         cost += vnf["cpu"]*cf_cpu
         revenue += vnf["cpu"]*cf_cpu*2#revenue es el doble del costo (hasta ahora) 
 
-    delay = 0
     if nslr.end_time > end_simulation_time:
         #si es mayor, se considera la porcion de tiempo hasta acabar la simulacion  
         time = nslr.operation_time - (nslr.end_time-end_simulation_time)
-        delay = (nslr.end_time - end_simulation_time) - nslr.incoming_time
     else:
         time = nslr.operation_time
-        delay = nslr.end_time - nslr.incoming_time
 
     #TODO: Check what is the unit of the times. 
     # if nslr.end_time - nslr.incoming_time > 1:
@@ -32,7 +29,7 @@ def calculate_profit_nodes(nslr,end_simulation_time, service_type_priority):
     #     print("[DEBUG] REQUEST.END TIME", nslr.end_time)
         
     #TODO: add req delay to cost
-    cost_check = delay * service_type_priority[nslr.service_type]
+    cost_check = (nslr.end_time - nslr.incoming_time) * service_type_priority[nslr.service_type]
     # add a threshold maybe else if priority if too high then even a small delay [normalise this]
     #update cost function here cost += (delay * priority) ?
     profit = (revenue-cost)*time
@@ -59,16 +56,13 @@ def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
         cost += vlink["bw"]*cf_bw*hops #cost is proportional to the number of hops
         revenue += vlink["bw"]*cf_bw*5*1.5 #(5:se cobra considerando el max num de hops permitido y 1.5: un 50% adicional al cost con 5hops)
 
-    delay = 0
     if nslr.end_time > end_simulation_time:
         #si es mayor, se considera la porcion de tiempo hasta acabar la simulacao  
         time = nslr.operation_time - (nslr.end_time-end_simulation_time)
-        delay = (nslr.end_time - end_simulation_time) - nslr.incoming_time
     else:
         time = nslr.operation_time
-        delay = nslr.end_time - nslr.incoming_time
 
-    cost_check = delay * service_type_priority[nslr.service_type]
+    cost_check = (nslr.end_time - nslr.incoming_time) * service_type_priority[nslr.service_type]
 
     #10 unit penalty -> -10
     #-10 -> -1 -> 1 unit penalty 
