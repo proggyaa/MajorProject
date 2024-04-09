@@ -35,7 +35,7 @@ def calculate_profit_nodes(nslr,end_simulation_time, service_type_priority):
     profit = (revenue-cost)*time
     # profit = (revenue-(cost + cost_check))*time 
     #TODO: profit and reward are separate
-    reward = profit - cost_check
+    reward = -cost_check
     return reward, profit
 
 def calculate_profit_links(nslr,end_simulation_time, service_type_priority):

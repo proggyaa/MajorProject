@@ -185,7 +185,7 @@ import random
 
 substrate16 = {"directed": False, "multigraph": False, 
 "graph": {
-    "min_cpu_cost": 4800, "max_cpu_revenue": 9600, 
+    "min_cpu_cost": 4800, "max_cpu_revenue": 9600,
     "edge_cpu": 1200, "local_cpu": 0, "centralized_cpu": 1200, "bw":1400, 
     "min_bw_cost": 700.0, "max_bw_revenue": 5250.0, 
     "max_cpu_profit": 4800, "max_bw_profit": 4550.0,

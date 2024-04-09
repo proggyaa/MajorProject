@@ -13,7 +13,7 @@ import substrate_graphs
 import calculate_metrics_modified
 import copy
 import ql
-import dql
+import dql_modified
 
 # import telegram_bot as bot
 import time
@@ -1041,7 +1041,7 @@ def main():
 
         for i in range(repetitions):
             # agente = ql.Qagent(0.9, 0.9, 0.9, episodes, n_states, n_actions) #(alpha, gamma, epsilon, episodes, n_states, n_actions)
-            agente = dql.Agent(9, n_actions)
+            agente = dql_modified.Agent(9, n_actions)
 
             for j in range(episodes):
                 # rewards = [1, 2]
