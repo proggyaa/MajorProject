@@ -561,8 +561,10 @@ def resource_allocation(cn, service_type_priority):  # cn=controller
             # Adding up rewards
             reward += reward_node + rew_link * 10
 
+            #delay
             delay = req.end_time - req.incoming_time
             step_total_delay += delay
+
             step_profit += (
                 profit_nodes + profit_links
             ) / max_profit  # the total profit in this step is the reward
@@ -1160,6 +1162,7 @@ def main():
             f.close()
             # TODO: Plot these values in graph as given in the paper end
 
+    print("[DEEPSARA MODIFIED]")
 
 if __name__ == "__main__":
     # bot.sendMessage("Simulation starts!")
