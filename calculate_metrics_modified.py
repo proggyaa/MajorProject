@@ -71,7 +71,7 @@ def calculate_profit_links(nslr,end_simulation_time, service_type_priority):
     #TODO: [Ipsita] Check output with our old reward function modification [100, 240 iterations]
     # reward = (revenue - (cost + cost_check)) * time
     profit = (revenue-cost)*time
-    reward = profit - cost_check
+    reward = -cost_check
     return reward, profit
 
 
