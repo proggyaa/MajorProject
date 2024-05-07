@@ -1,5 +1,6 @@
 # total resource utlization is less but central and edge nodes are both being used more in modified
 # our profit isn't increasing as much because we are using more central nodes too, which drives up the cost
+from typing import *
 import matplotlib
 
 matplotlib.use("agg")
@@ -8,6 +9,7 @@ import csv
 import math
 import linecache
 import ast
+import config
 from config import episodes, repetitions
 
 episodes = str(episodes)
@@ -15,13 +17,29 @@ repetitions = str(repetitions)
 
 print("[DEBUG]", episodes, repetitions)
 
+# [PROFIT]
 profit_line_number = 3
+profit_embb_line_number = 18
+profit_urllc_line_number = 21
+profit_miot_line_number = 24
+
+# [ACPT RATE]
 acpt_rate_line_number = 27
+acpt_rate_embb_line_number = 30
+acpt_rate_urllc_line_number = 33
+acpt_rate_miot_line_number = 36
+
+# [RESOURCE UTL]
 res_utl_line_number = 42
 central_utl_line_number = 51
 edge_utl_line_number = 48
 bw_utl_line_number = 45
 
+res_utl_embb_line_number = 54
+res_utl_urllc_line_number = 57
+res_utl_miot_line_number = 60
+
+# [DELAY]
 total_delay_line_number = 63
 embb_delay_line_number = 66
 urllc_delay_line_number = 69
@@ -30,6 +48,7 @@ miot_delay_line_number = 72
 deepsara_modified_output = "deepsara_20_output_modified.txt"
 deepsara_output = "deepsara_20_output.txt"
 
+# [DELAY]
 deepsara_modified_total_delay = ast.literal_eval(
     linecache.getline(deepsara_modified_output, total_delay_line_number)
 )
@@ -57,11 +76,112 @@ deepsara_miot_delay = ast.literal_eval(
     linecache.getline(deepsara_output, miot_delay_line_number)
 )
 
+# [PROFIT]
 deepsara_modified_profit = ast.literal_eval(
     linecache.getline(deepsara_modified_output, profit_line_number)
 )
 deepsara_profit = ast.literal_eval(
     linecache.getline(deepsara_output, profit_line_number)
+)
+
+deepsara_modified_embb_profit = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, profit_embb_line_number)
+)
+deepsara_embb_profit = ast.literal_eval(
+    linecache.getline(deepsara_output, profit_embb_line_number)
+)
+
+deepsara_modified_urllc_profit = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, profit_urllc_line_number)
+)
+deepsara_urllc_profit = ast.literal_eval(
+    linecache.getline(deepsara_output, profit_urllc_line_number)
+)
+
+deepsara_modified_miot_profit = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, profit_miot_line_number)
+)
+deepsara_miot_profit = ast.literal_eval(
+    linecache.getline(deepsara_output, profit_miot_line_number)
+)
+
+# [ACPT RATE]
+acpt_rate_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, acpt_rate_line_number)
+)
+acpt_rate_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, acpt_rate_line_number)
+)
+acpt_rate_embb_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, acpt_rate_embb_line_number)
+)
+acpt_rate_embb_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, acpt_rate_embb_line_number)
+)
+
+acpt_rate_urllc_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, acpt_rate_urllc_line_number)
+)
+acpt_rate_urllc_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, acpt_rate_urllc_line_number)
+)
+acpt_rate_miot_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, acpt_rate_miot_line_number)
+)
+acpt_rate_miot_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, acpt_rate_miot_line_number)
+)
+
+# [RESOURCE UTL]
+res_utl_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, res_utl_line_number)
+)
+res_utl_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, res_utl_line_number)
+)
+
+#[embb]
+res_utl_embb_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, res_utl_embb_line_number)
+)
+res_utl_embb_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, res_utl_embb_line_number)
+)
+#[urllc]
+res_utl_urllc_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, res_utl_urllc_line_number)
+)
+res_utl_urllc_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, res_utl_urllc_line_number)
+)
+#[miot]
+res_utl_miot_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, res_utl_miot_line_number)
+)
+res_utl_miot_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, res_utl_miot_line_number)
+)
+
+
+res_centralutl_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, central_utl_line_number)
+)
+res_centralutl_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, central_utl_line_number)
+)
+
+res_edgeutl_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, edge_utl_line_number)
+)
+res_edgeutl_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, edge_utl_line_number)
+)
+
+bw_utl_deepsara_modified = ast.literal_eval(
+    linecache.getline(deepsara_modified_output, bw_utl_line_number)
+)
+bw_utl_deepsara = ast.literal_eval(
+    linecache.getline(deepsara_output, bw_utl_line_number)
 )
 
 
@@ -88,29 +208,27 @@ topologies = ["16BA", "abilene"]
 ########### arrivalRate20 ############
 arrival_rate = "20"
 
-# deeprl state3de10 actions30 160episodes replay_start_size=500 anneal_rate=(1/5000):
-# these will be deepsara, not nr. TODO:
-# profit_nr = deepsara_profit
-# profit_nr_modified = deepsara_modified_profit
+# [PROFIT]
+me_profit_deepsara = []
+me_profit_deepsara_modified = []
+me_profit_embb_deepsara = []
+me_profit_embb_deepsara_modified = []
+me_profit_urllc_deepsara = []
+me_profit_urllc_deepsara_modified = []
+me_profit_miot_deepsara = []
+me_profit_miot_deepsara_modified = []
 
-# print(len(profit_nr))
-# profit_rl = profit_rl + profit_rl + profit_rl + profit_rl
-# profit_nr = profit_nr + profit_nr + profit_nr + profit_nr
-# profit_aar = profit_aar + profit_aar + profit_aar + profit_aar
+# [ACPT RATE]
+me_acpt_rate_deepsara = []
+me_acpt_rate_deepsara_modified = []
+me_acpt_rate_embb = []
+me_acpt_rate_embb_modified = []
+me_acpt_rate_urllc = []
+me_acpt_rate_urllc_modified = []
+me_acpt_rate_miot = []
+me_acpt_rate_miot_modified = []
 
-# for i in range(11,len(profit_rl)):
-#     for j in range(8):
-#         profit_rl[i].append(0.56)
-#         res_utl_rl[i].append(0.52)
-
-margin_error1 = []
-margin_error2 = []
-margin_error3 = []
-margin_error4 = []
-margin_error5 = []
-margin_error6 = []
-
-#delay
+# [DELAY]
 me_delay_deepsara_modified = []
 me_delay_deepsara = []
 me_delay_embb_modified = []
@@ -120,29 +238,24 @@ me_delay_embb = []
 me_delay_urllc = []
 me_delay_miot = []
 
-me_embb_profit_rl = []
-me_urllc_profit_rl = []
-me_miot_profit_rl = []
-me_embb_acpt_rl = []
-me_urllc_acpt_rl = []
-me_miot_acpt_rl = []
-
+# [RESOURCE UTL]
 me_utl_deepsara = []
 me_utl_deepsara_modified = []
 me_centralutl_deepsara_modified = []
 me_centralutl_deepsara = []
 me_edgeutl_deepsara_modified = []
 me_edgeutl_deepsara = []
+me_bwutl_deepsara_modified = []
+me_bwutl_deepsara = []
 
-me_utl_rl = []
-me_utl_nr = []
-me_utl_aar = []
-me_centralutl_rl = []
-me_centralutl_nr = []
-me_edgeutl_rl = []
-me_edgeutl_nr = []
+me_utl_embb = []
+me_utl_embb_modified = []
+me_utl_urllc = []
+me_utl_urllc_modified = []
+me_utl_miot = []
+me_utl_miot_modified = []
 
-#delay
+# [DELAY]
 deepsara_modified_total_delay_aux = []
 deepsara_total_delay_aux = []
 
@@ -153,242 +266,234 @@ deepsara_embb_delay_aux = []
 deepsara_urllc_delay_aux = []
 deepsara_miot_delay_aux = []
 
+# [PROFIT]
 profit_deepsara_modified_aux = []
 profit_deepsara_aux = []
 
-profit_rl_aux = []
-profit_nr_aux = []
-profit_nr_modified_aux = []
-profit_aar_aux = []
-embb_profit_rl_aux = []
-urllc_profit_rl_aux = []
-miot_profit_rl_aux = []
+deepsara_modified_embb_profit_aux = []
+deepsara_embb_profit_aux = []
+deepsara_modified_urllc_profit_aux = []
+deepsara_urllc_profit_aux = []
+deepsara_modified_miot_profit_aux = []
+deepsara_miot_profit_aux = []
 
-acpt_rate_deepsara_modified = ast.literal_eval(
-    linecache.getline(deepsara_modified_output, acpt_rate_line_number)
-)
-acpt_rate_deepsara = ast.literal_eval(
-    linecache.getline(deepsara_output, acpt_rate_line_number)
-)
+# [ACPT RATE]
 acpt_rate_deepsara_modified_aux = []
 acpt_rate_deepsara_aux = []
 
-acpt_rate_rl_aux = []
-acpt_rate_nr_aux = []
-acpt_rate_aar_aux = []
-embb_acpt_rl_aux = []
-urllc_acpt_rl_aux = []
-miot_acpt_rl_aux = []
+acpt_rate_embb_deepsara_aux = []
+acpt_rate_embb_deepsara_modified_aux = []
+acpt_rate_urllc_deepsara_aux = []
+acpt_rate_urllc_deepsara_modified_aux = []
+acpt_rate_miot_deepsara_aux = []
+acpt_rate_miot_deepsara_modified_aux = []
 
-res_utl_deepsara_modified = ast.literal_eval(
-    linecache.getline(deepsara_modified_output, res_utl_line_number)
-)
-res_utl_deepsara = ast.literal_eval(
-    linecache.getline(deepsara_output, res_utl_line_number)
-)
+# [RESOURCE UTL]
 res_utl_deepsara_modified_aux = []
 res_utl_deepsara_aux = []
 
-res_centralutl_deepsara_modified = ast.literal_eval(
-    linecache.getline(deepsara_modified_output, central_utl_line_number)
-)
-res_centralutl_deepsara = ast.literal_eval(
-    linecache.getline(deepsara_output, central_utl_line_number)
-)
+res_utl_embb_deepsara_modified_aux = []
+res_utl_embb_deepsara_aux  = []
+res_utl_urllc_deepsara_modified_aux = []
+res_utl_urllc_deepsara_aux = []
+res_utl_miot_deepsara_modified_aux = []
+res_utl_miot_deepsara_aux = []
+
 res_centralutl_deepsara_modified_aux = []
 res_centralutl_deepsara_aux = []
-
-res_edgeutl_deepsara_modified = ast.literal_eval(
-    linecache.getline(deepsara_modified_output, edge_utl_line_number)
-)
-res_edgeutl_deepsara = ast.literal_eval(
-    linecache.getline(deepsara_output, edge_utl_line_number)
-)
 res_edgeutl_deepsara_modified_aux = []
 res_edgeutl_deepsara_aux = []
 
-res_utl_rl_aux = []
-res_utl_nr_aux = []
-res_utl_aar_aux = []
-central_utl_rl_aux = []
-central_utl_nr_aux = []
-edge_utl_rl_aux = []
-edge_utl_nr_aux = []
-
-me_bwutl_deepsara_modified = []
-me_bwutl_deepsara = []
-bw_utl_deepsara_modified = ast.literal_eval(
-    linecache.getline(deepsara_modified_output, bw_utl_line_number)
-)
-bw_utl_deepsara = ast.literal_eval(
-    linecache.getline(deepsara_output, bw_utl_line_number)
-)
 bw_utl_deepsara_modified_aux = []
 bw_utl_deepsara_aux = []
 
-bw_utl_rl_aux = []
-bw_utl_nr_aux = []
-bw_utl_aar_aux = []
-me_bwutl_rl = []
-me_bwutl_nr = []
-me_bwutl_aar = []
-embb_bw_utl_rl_aux = []
-urllc_bw_utl_rl_aux = []
-miot_bw_utl_rl_aux = []
-me_embb_bwutl_rl = []
-me_urllc_bwutl_rl = []
-me_miot_bwutl_rl = []
 
-# print("[DEBUG] LEN PROFIT", len(profit_nr))
-print("[DEBUG] LEN CENTRAL RES UTL", len(res_centralutl_deepsara_modified))
+def modify_data(ds, ds_mod, me_ds, me_ds_mod, ds_aux, ds_mod_aux):
+    for i in range(int(episodes)):
+        div = 1
+
+        me_ds.append(1.96 * standardDev(ds[i]) / math.sqrt(100))
+        me_ds_mod.append(1.96 * standardDev(ds_mod[i]) / math.sqrt(100))
+
+        ds[i] = average(ds[i]) / div
+        ds_mod[i] = average(ds_mod[i]) / div
+
+        ds_aux.append(ds[i] + 0.1)
+        ds_mod_aux.append(ds_mod[i] + 0.1)
+    return [ds_aux, ds_mod_aux]
+
+
+#[PROFIT]
+modify_data(
+    deepsara_profit,
+    deepsara_modified_profit,
+    me_profit_deepsara,
+    me_profit_deepsara_modified,
+    profit_deepsara_aux,
+    profit_deepsara_modified_aux,
+)
+modify_data(
+    deepsara_embb_profit,
+    deepsara_modified_embb_profit,
+    me_profit_embb_deepsara,
+    me_profit_embb_deepsara_modified,
+    deepsara_embb_profit_aux,
+    deepsara_modified_embb_profit_aux,
+)
+modify_data(
+    deepsara_urllc_profit,
+    deepsara_modified_urllc_profit,
+    me_profit_urllc_deepsara,
+    me_profit_urllc_deepsara_modified,
+    deepsara_urllc_profit_aux,
+    deepsara_modified_urllc_profit_aux,
+)
+modify_data(
+    deepsara_miot_profit,
+    deepsara_modified_miot_profit,
+    me_profit_miot_deepsara,
+    me_profit_miot_deepsara_modified,
+    deepsara_miot_profit_aux,
+    deepsara_modified_miot_profit_aux,
+)
+
+#[ACPT RATE]
+modify_data(
+    acpt_rate_deepsara,
+    acpt_rate_deepsara_modified,
+    me_acpt_rate_deepsara,
+    me_acpt_rate_deepsara_modified,
+    acpt_rate_deepsara_aux,
+    acpt_rate_deepsara_modified_aux,
+)
+modify_data(
+    acpt_rate_embb_deepsara,
+    acpt_rate_embb_deepsara_modified,
+    me_acpt_rate_embb,
+    me_acpt_rate_embb_modified,
+    acpt_rate_embb_deepsara_aux,
+    acpt_rate_embb_deepsara_modified_aux
+)
+modify_data(
+    acpt_rate_urllc_deepsara,
+    acpt_rate_urllc_deepsara_modified,
+    me_acpt_rate_urllc,
+    me_acpt_rate_urllc_modified,
+    acpt_rate_urllc_deepsara_aux,
+    acpt_rate_urllc_deepsara_modified_aux
+)
+modify_data(
+    acpt_rate_miot_deepsara,
+    acpt_rate_miot_deepsara_modified,
+    me_acpt_rate_miot,
+    me_acpt_rate_miot_modified,
+    acpt_rate_miot_deepsara_aux,
+    acpt_rate_miot_deepsara_modified_aux
+)
+
+#[RES UTL]
+modify_data(
+    res_utl_deepsara,
+    res_utl_deepsara_modified,
+    me_utl_deepsara,
+    me_utl_deepsara_modified,
+    res_utl_deepsara_aux,
+    res_utl_deepsara_modified_aux,
+)
+
+modify_data(
+    res_utl_embb_deepsara,
+    res_utl_embb_deepsara_modified,
+    me_utl_embb,
+    me_utl_embb_modified,
+    res_utl_embb_deepsara_aux,
+    res_utl_embb_deepsara_modified_aux,
+)
+modify_data(
+    res_utl_urllc_deepsara,
+    res_utl_urllc_deepsara_modified,
+    me_utl_urllc,
+    me_utl_urllc_modified,
+    res_utl_urllc_deepsara_aux,
+    res_utl_urllc_deepsara_modified_aux,
+)
+modify_data(
+    res_utl_miot_deepsara,
+    res_utl_miot_deepsara_modified,
+    me_utl_miot,
+    me_utl_miot_modified,
+    res_utl_miot_deepsara_aux,
+    res_utl_miot_deepsara_modified_aux,
+)
+
+# central utl
+modify_data(
+    res_centralutl_deepsara,
+    res_centralutl_deepsara_modified,
+    me_centralutl_deepsara,
+    me_centralutl_deepsara_modified,
+    res_centralutl_deepsara_aux,
+    res_centralutl_deepsara_modified_aux,
+)
+# edge utl
+modify_data(
+    res_edgeutl_deepsara,
+    res_edgeutl_deepsara_modified,
+    me_edgeutl_deepsara,
+    me_edgeutl_deepsara_modified,
+    res_edgeutl_deepsara_aux,
+    res_edgeutl_deepsara_modified_aux,
+)
+# bw utl
+modify_data(
+    bw_utl_deepsara,
+    bw_utl_deepsara_modified,
+    me_bwutl_deepsara,
+    me_bwutl_deepsara_modified,
+    bw_utl_deepsara_aux,
+    bw_utl_deepsara_modified_aux,
+)
+
+# Delay
+modify_data(
+    deepsara_total_delay,
+    deepsara_modified_total_delay,
+    me_delay_deepsara,
+    me_delay_deepsara_modified,
+    deepsara_total_delay_aux,
+    deepsara_modified_total_delay_aux,
+)
+# embb delay
+modify_data(
+    deepsara_embb_delay,
+    deepsara_modified_embb_delay,
+    me_delay_embb,
+    me_delay_embb_modified,
+    deepsara_embb_delay_aux,
+    deepsara_modified_embb_delay_aux,
+)
+# urllc delay
+modify_data(
+    deepsara_urllc_delay,
+    deepsara_modified_urllc_delay,
+    me_delay_urllc,
+    me_delay_urllc_modified,
+    deepsara_urllc_delay_aux,
+    deepsara_modified_urllc_delay_aux,
+)
+# miot delay
+modify_data(
+    deepsara_miot_delay,
+    deepsara_modified_miot_delay,
+    me_delay_miot,
+    me_delay_miot_modified,
+    deepsara_miot_delay_aux,
+    deepsara_modified_miot_delay_aux,
+)
 
 for i in range(len(deepsara_profit)):
     x.append(i + 1)
 
-    # Profit (SARA, NR, AAR) x episodes,
-    # margin_error1.append(1.96*standardDev(profit_rl[i])/math.sqrt(100))
-    # profit_rl[i] = average(profit_rl[i])
-    # profit_rl_aux.append(profit_rl[i]+0.1)
-
-    # TODO: Plot profit_modified
-    margin_error1.append(1.96 * standardDev(deepsara_modified_profit[i]) / math.sqrt(100))
-    deepsara_modified_profit[i] = average(deepsara_modified_profit[i])
-    profit_deepsara_modified_aux.append(deepsara_modified_profit[i] + 0.1)
-
-    # plot profit
-    margin_error2.append(1.96 * standardDev(deepsara_profit[i]) / math.sqrt(100))
-    deepsara_profit[i] = average(deepsara_profit[i])
-    profit_deepsara_aux.append(deepsara_profit[i] + 0.1)
-    # profit_nr_aux.append(profit_nr[i]-0.041)
-
-    # margin_error3.append(1.96*standardDev(profit_aar[i])/math.sqrt(100))
-    # profit_aar[i] = average(profit_aar[i])
-    # profit_aar_aux.append(profit_aar[i]+0.1)
-    # profit_aar_aux.append(profit_aar[i]- 0.041)
-
-    # Acceptance Rate (SARA, NR, AAR) x episodes
-    # modified deepsara
-    margin_error4.append(
-        1.96 * standardDev(acpt_rate_deepsara_modified[i]) / math.sqrt(100)
-    )
-    acpt_rate_deepsara_modified[i] = average(acpt_rate_deepsara_modified[i])
-    acpt_rate_deepsara_modified_aux.append(acpt_rate_deepsara_modified[i] + 0.1)
-
-    # deepsara
-    margin_error5.append(1.96 * standardDev(acpt_rate_deepsara[i]) / math.sqrt(100))
-    acpt_rate_deepsara[i] = average(acpt_rate_deepsara[i])
-    acpt_rate_deepsara_aux.append(acpt_rate_deepsara[i] + 0.1)
-
-    # margin_error6.append(1.96*standardDev(acpt_rate_aar[i])/math.sqrt(100))
-    # acpt_rate_aar[i] = average(acpt_rate_aar[i])
-    # acpt_rate_aar_aux.append(acpt_rate_aar[i]+0.05)
-
-    # Total Node resource utilization (SARA, NR, AAR) x episodes
-    # modified deepsara
-    me_utl_deepsara_modified.append(
-        1.96 * standardDev(res_utl_deepsara_modified[i]) / math.sqrt(100)
-    )
-    res_utl_deepsara_modified[i] = average(res_utl_deepsara_modified[i])
-    res_utl_deepsara_modified_aux.append(res_utl_deepsara_modified[i] + 0.1)
-
-    # deepsara
-    me_utl_deepsara.append(1.96 * standardDev(res_utl_deepsara[i]) / math.sqrt(100))
-    res_utl_deepsara[i] = average(res_utl_deepsara[i])
-    res_utl_deepsara_aux.append(res_utl_deepsara[i] + 0.1)
-
-    # me_utl_aar.append(1.96*standardDev(res_utl_aar[i])/math.sqrt(100))
-    # res_utl_aar[i] = average(res_utl_aar[i])
-    # res_utl_aar_aux.append(res_utl_aar[i]+0.1)
-
-    # Centralized resource utilization
-    # deepsara modified
-    me_centralutl_deepsara_modified.append(
-        1.96 * standardDev(res_centralutl_deepsara_modified[i]) / math.sqrt(100)
-    )
-    res_centralutl_deepsara_modified[i] = average(res_centralutl_deepsara_modified[i])
-    res_centralutl_deepsara_modified_aux.append(
-        res_centralutl_deepsara_modified[i] + 0.03333
-    )
-
-    # deepsara
-    me_centralutl_deepsara.append(
-        1.96 * standardDev(res_centralutl_deepsara[i]) / math.sqrt(100)
-    )
-    res_centralutl_deepsara[i] = average(res_centralutl_deepsara[i])
-    res_centralutl_deepsara_aux.append(res_centralutl_deepsara[i])
-
-    # Edge resource utilization
-    # deepsara modified
-    me_edgeutl_deepsara_modified.append(
-        1.96 * standardDev(res_edgeutl_deepsara_modified[i]) / math.sqrt(100)
-    )
-    res_edgeutl_deepsara_modified[i] = average(res_edgeutl_deepsara_modified[i])
-    res_edgeutl_deepsara_modified_aux.append(res_edgeutl_deepsara_modified[i] + 0.03333)
-
-    # deepsara
-    me_edgeutl_deepsara.append(
-        1.96 * standardDev(res_edgeutl_deepsara[i]) / math.sqrt(100)
-    )
-    res_edgeutl_deepsara[i] = average(res_edgeutl_deepsara[i])
-    res_edgeutl_deepsara_aux.append(res_edgeutl_deepsara[i])
-
-    # Bw utilization
-    # modified deepsara
-    me_bwutl_deepsara_modified.append(
-        1.96 * standardDev(bw_utl_deepsara_modified[i]) / math.sqrt(100)
-    )
-    bw_utl_deepsara_modified[i] = average(bw_utl_deepsara_modified[i])
-    bw_utl_deepsara_modified_aux.append(bw_utl_deepsara_modified[i] + 0.03333)
-
-    # deepsara
-    me_bwutl_deepsara.append(1.96 * standardDev(bw_utl_deepsara[i]) / math.sqrt(100))
-    bw_utl_deepsara[i] = average(bw_utl_deepsara[i])
-    bw_utl_deepsara_aux.append(bw_utl_deepsara[i] * 8)
-
-    #DELAY
-    #modified deepsara
-    me_delay_deepsara_modified.append(1.96 * standardDev(deepsara_modified_total_delay[i]) / math.sqrt(100))
-    deepsara_modified_total_delay[i] = average(deepsara_modified_total_delay[i])
-    deepsara_modified_total_delay_aux.append(deepsara_modified_total_delay[i])
-
-    #deepsara
-    me_delay_deepsara.append(1.96 * standardDev(deepsara_total_delay[i]) / math.sqrt(100))
-    deepsara_total_delay[i] = average(deepsara_total_delay[i])
-    deepsara_total_delay_aux.append(deepsara_total_delay[i])
-
-    #embb delay
-    #modified deepsara
-    me_delay_embb_modified.append(1.96 * standardDev(deepsara_modified_embb_delay[i]) / math.sqrt(100))
-    deepsara_modified_embb_delay[i] = average(deepsara_modified_embb_delay[i])
-    deepsara_modified_embb_delay_aux.append(deepsara_modified_embb_delay[i])
-    
-    #deepsara
-    me_delay_embb.append(1.96 * standardDev(deepsara_embb_delay[i]) / math.sqrt(100))
-    deepsara_embb_delay[i] = average(deepsara_embb_delay[i])
-    deepsara_embb_delay_aux.append(deepsara_embb_delay[i])
-    
-    #urllc delay
-    #modified deepsara
-    me_delay_urllc_modified.append(1.96 * standardDev(deepsara_modified_urllc_delay[i]) / math.sqrt(100))
-    deepsara_modified_urllc_delay[i] = average(deepsara_modified_urllc_delay[i])
-    deepsara_modified_urllc_delay_aux.append(deepsara_modified_urllc_delay[i])
-    
-    #deepsara
-    me_delay_urllc.append(1.96 * standardDev(deepsara_urllc_delay[i]) / math.sqrt(100))
-    deepsara_urllc_delay[i] = average(deepsara_urllc_delay[i])
-    deepsara_urllc_delay_aux.append(deepsara_urllc_delay[i])
-    
-    #miot delay
-    #modifed deepsara
-    me_delay_miot_modified.append(1.96 * standardDev(deepsara_modified_miot_delay[i]) / math.sqrt(100))
-    deepsara_modified_miot_delay[i] = average(deepsara_modified_miot_delay[i])
-    deepsara_modified_miot_delay_aux.append(deepsara_modified_miot_delay[i])
-    
-    #deepsara
-    me_delay_miot.append(1.96 * standardDev(deepsara_miot_delay[i]) / math.sqrt(100))
-    deepsara_miot_delay[i] = average(deepsara_miot_delay[i])
-    deepsara_miot_delay_aux.append(deepsara_miot_delay[i])
-    
     # me_bwutl_aar.append(1.96*standardDev(bw_utl_aar[i])/math.sqrt(100))
     # bw_utl_aar[i] = average(bw_utl_aar[i])
     # bw_utl_aar_aux.append(bw_utl_aar[i]*8)
@@ -434,432 +539,303 @@ for i in range(len(deepsara_profit)):
     # miot_acpt_rl[i] = average(miot_acpt_rl[i])
     # miot_acpt_rl_aux.append(miot_acpt_rl[i]+0.03333)
 
-font = {"family": "normal", "size": 16}
-matplotlib.rc("font", **font)
 
-#Delay
-plt.axvline(x=12, color="silver", linestyle="--")
-# plt.errorbar(x,profit_rl_aux,yerr = margin_error1,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    deepsara_modified_total_delay_aux,
-    yerr=me_delay_deepsara_modified,
-    fmt="-",
-    label="DEEPSARA_Modified",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    deepsara_total_delay_aux,
-    yerr=me_delay_deepsara,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
-# plt.errorbar(x,profit_aar_aux,yerr = margin_error3,fmt="-",label="AAR", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("Delay")
-# plt.title('Time Step Profit')
-# plt.legend()
-plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# plt.show()
-plt.savefig(
-    "Output_Plots\Delay_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+def plot_comparison(x, y_ds, y_ds_mod, me_ds, me_ds_mod, title: str):
+    plt.axvline(x=12, color="silver", linestyle="--")
+    plt.errorbar(
+        x,
+        y_ds_mod,
+        # yerr=me_ds_mod,
+        fmt="-",
+        label="DEEPSARA_Modified",
+        color="blue",
+        ecolor="lightgray",
+        capsize=2,
+    )
+    plt.errorbar(
+        x,
+        y_ds,
+        # yerr=me_ds,
+        fmt="-",
+        label="DEEPSARA",
+        color="red",
+        ecolor="lightgray",
+        capsize=2,
+    )
+    print("reached here")
+    plt.xlabel("Episodes")
+    plt.ylabel(title)
+    plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
+    plt.savefig(
+        f"Output_Plots\\"
+        + "_"
+        + title
+        + "_EPISODES_"
+        + episodes
+        + "_REP"
+        + repetitions
+        + "_"
+        + arrival_rate
+        + "_"
+        + topologies[0]
+        + ".png",
+        bbox_inches="tight",
+    )
+    plt.close()
 
-#embb Delay
-plt.axvline(x=12, color="silver", linestyle="--")
-# plt.errorbar(x,profit_rl_aux,yerr = margin_error1,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    deepsara_modified_embb_delay_aux,
-    yerr=me_delay_embb_modified,
-    fmt="-",
-    label="DEEPSARA_Modified",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    deepsara_embb_delay_aux,
-    yerr=me_delay_embb,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
-# plt.errorbar(x,profit_aar_aux,yerr = margin_error3,fmt="-",label="AAR", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("embb Delay")
-# plt.title('Time Step Profit')
-# plt.legend()
-plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# plt.show()
-plt.savefig(
-    "Output_Plots\EMBB DELAY_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+def plot_nslr_comparison(x, y_sets, me_sets, labels, colors, title: str):
+    n = len(y_sets)
+    plt.figure(figsize=(10, 6))  # Set the figure size
+    plt.axvline(x=12, color="silver", linestyle="--")
+    for i in range(n):
+        plt.errorbar(
+            x,
+            y_sets[i],
+            # yerr=me_sets[i],
+            fmt="-",
+            label=labels[i],
+            color=colors[i],
+            capsize=2,
+        )
 
-#urllc delay
-print("[DEBUG URLLC]", len(deepsara_modified_urllc_delay_aux), len(deepsara_urllc_delay_aux))
-plt.axvline(x=12, color="silver", linestyle="--")
-# plt.errorbar(x,profit_rl_aux,yerr = margin_error1,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    deepsara_modified_urllc_delay_aux,
-    yerr=me_delay_urllc_modified,
-    fmt="-",
-    label="DEEPSARA_Modified",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    deepsara_urllc_delay_aux,
-    yerr=me_delay_urllc,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
+    plt.xlabel("Episodes")
+    plt.ylabel(title)
+    plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
+    plt.savefig(
+        f"Output_Plots\\_{title}_EPISODES_{episodes}_REP{repetitions}_{arrival_rate}_{topologies[0]}.png",
+        bbox_inches="tight",
+    )
+    plt.close()
 
-# plt.errorbar(x,profit_aar_aux,yerr = margin_error3,fmt="-",label="AAR", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("urllc Delay")
-# plt.title('Time Step Profit')
-# plt.legend()
-plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# plt.show()
-plt.savefig(
-    "Output_Plots\\URLLC DELAY_EPISODES_" + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+def plot_all():
+    #[DELAY]
+    delay_data = [
+        deepsara_embb_delay_aux,
+        deepsara_modified_embb_delay_aux,
+        deepsara_urllc_delay_aux,
+        deepsara_modified_urllc_delay_aux,
+        deepsara_miot_delay_aux,
+        deepsara_modified_miot_delay_aux,
+    ]
 
-#miot Delay
-plt.axvline(x=12, color="silver", linestyle="--")
-# plt.errorbar(x,profit_rl_aux,yerr = margin_error1,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    deepsara_modified_miot_delay_aux,
-    yerr=me_delay_miot_modified,
-    fmt="-",
-    label="DEEPSARA_Modified",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    deepsara_miot_delay_aux,
-    yerr=me_delay_miot,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
+    delay_errors = [
+        me_delay_embb,
+        me_delay_embb_modified,
+        me_delay_urllc,
+        me_delay_urllc_modified,
+        me_delay_miot,
+        me_delay_miot_modified,
+    ]
 
-# plt.errorbar(x,profit_aar_aux,yerr = margin_error3,fmt="-",label="AAR", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("miot Delay")
-# plt.title('Time Step Profit')
-# plt.legend()
-plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# plt.show()
-plt.savefig(
-    "Output_Plots\MIOT DELAY_EPISODES_" + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+    all_labels = [
+        "DEEPSARA EMBB",
+        "DEEPSARA_Modified EMBB",
+        "DEEPSARA URLLC",
+        "DEEPSARA_Modified URLLC",
+        "DEEPSARA MIOT",
+        "DEEPSARA_Modified MIOT",
+    ]
 
-# Profit
-plt.axvline(x=12, color="silver", linestyle="--")
-# plt.errorbar(x,profit_rl_aux,yerr = margin_error1,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    profit_deepsara_modified_aux,
-    yerr=margin_error1,
-    fmt="-",
-    label="DEEPSARA_Modified",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    profit_deepsara_aux,
-    yerr=margin_error2,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
-# plt.errorbar(x,profit_aar_aux,yerr = margin_error3,fmt="-",label="AAR", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("Profit")
-# plt.title('Time Step Profit')
-# plt.legend()
-plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# plt.show()
-plt.savefig(
-    "Output_Plots\profit_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+    all_colors = ["yellow", "blue", "orange", "green", "red", "purple"]
+    # all_colors = ["red", "blue", "green", "orange", "purple", "brown"]
 
-# Aceptance rate
-# plt.errorbar(x,acpt_rate_rl_aux,yerr = margin_error4,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    acpt_rate_deepsara_modified_aux,
-    yerr=margin_error4,
-    fmt="-",
-    label="DEEPSARA_MODIFIED",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    acpt_rate_deepsara_aux,
-    yerr=margin_error5,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.xlabel("Episodes")
-plt.ylabel("Acceptance Rate")
-# plt.title('Time Step Acceptance Rate')
-plt.legend(fontsize=14, fancybox=True, shadow=True, bbox_to_anchor=(1, 0.61))
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# #plt.show()
-plt.savefig(
-    "Output_Plots\\acptrate_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+    # Plot all types of delay on the same plot
+    plot_nslr_comparison(x, delay_data, delay_errors, all_labels, all_colors, "NSLR_DELAY")
+
+    #[PROFIT]
+    profit_data = [
+        deepsara_embb_profit_aux,
+        deepsara_modified_embb_profit_aux,
+        deepsara_urllc_profit,
+        deepsara_modified_urllc_profit_aux,
+        deepsara_miot_profit,
+        deepsara_modified_miot_profit_aux,
+    ]
+
+    profit_errors = [
+        me_profit_embb_deepsara,
+        me_profit_embb_deepsara_modified,
+        me_profit_urllc_deepsara,
+        me_profit_urllc_deepsara_modified,
+        me_profit_miot_deepsara,
+        me_profit_miot_deepsara_modified      
+    ]
+
+    # Plot all types of profits on the same plot
+    plot_nslr_comparison(x, profit_data, profit_errors, all_labels, all_colors, "NSLR_PROFIT")
+
+    #[ACPT RATE]
+    acpt_rate_data = [
+        acpt_rate_embb_deepsara_aux,
+        acpt_rate_embb_deepsara_modified_aux,
+        acpt_rate_urllc_deepsara_aux,
+        acpt_rate_urllc_deepsara_modified_aux,
+        acpt_rate_miot_deepsara_aux,
+        acpt_rate_miot_deepsara_modified_aux,   
+    ]
+    acpt_rate_errors = [
+        me_acpt_rate_embb,
+        me_acpt_rate_embb_modified,
+        me_acpt_rate_urllc, 
+        me_acpt_rate_urllc_modified,
+        me_acpt_rate_miot,
+        me_acpt_rate_miot_modified
+    ]
+    # Plot all types of acpt rate on the same plot
+    plot_nslr_comparison(x, acpt_rate_data, acpt_rate_errors, all_labels, all_colors, "NSLR_ACPT_RATE")
+
+    #[RESOURCE UTL]
+    res_utl_data = [
+        res_centralutl_deepsara_aux,
+        res_centralutl_deepsara_modified_aux,
+        res_edgeutl_deepsara_aux,
+        res_edgeutl_deepsara_modified_aux,
+        bw_utl_deepsara_aux,
+        bw_utl_deepsara_modified_aux   
+    ]
+    res_utl_errors = [
+        me_centralutl_deepsara,
+        me_centralutl_deepsara_modified,
+        me_edgeutl_deepsara,
+        me_edgeutl_deepsara_modified,
+        me_bwutl_deepsara,
+        me_bwutl_deepsara_modified
+    ]
+    # Plot all types of delay on the same plot
+    plot_nslr_comparison(x, res_utl_data, res_utl_errors, all_labels, all_colors, "NSLR_RES_UTL")
 
 
-# Resource Utilization
-plt.axvline(x=12, color="silver", linestyle="--")
-# plt.errorbar(x,res_utl_rl_aux,yerr = me_utl_rl,fmt="-",label="SARA",ecolor="lightgray",capsize=2)
-plt.errorbar(
-    x,
-    res_utl_deepsara_modified_aux,
-    yerr=me_utl_deepsara_modified,
-    fmt="-",
-    label="DEEPSARA_MODIFIED",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
-    x,
-    res_utl_deepsara_aux,
-    yerr=me_utl_deepsara,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.xlabel("Episodes")
-plt.ylabel("Resource Utilization")
-# plt.title('Time Step Resource Utilization')
-plt.legend(fontsize=14, loc="lower right", fancybox=True, shadow=True)
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
-# plt.show()
-# plt.ylim(0.48,0.61)
-plt.savefig(
-    "Output_Plots\\resutl_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + "_"
-    + arrival_rate
-    + "_"
-    + topologies[0]
-    + ".png",
-    bbox_inches="tight",
-)
-plt.close()
+def plot_graphs_episodes():
+    font = {"family": "normal", "size": 16}
+    matplotlib.rc("font", **font)
+    plot_all()
+    
+    #Delay v/s episode
+    plot_comparison(
+        x,
+        deepsara_total_delay_aux,
+        deepsara_modified_total_delay_aux,
+        me_delay_deepsara,
+        me_delay_deepsara_modified,
+        "DELAY",
+    )
+    
+    # Profit v/s episode
+    plot_comparison(
+        x,
+        profit_deepsara_aux,
+        profit_deepsara_modified_aux,
+        me_profit_deepsara,
+        me_profit_deepsara_modified,
+        "PROFIT",
+    )
+    
+    # Aceptance rate v/s episode
+    plot_comparison(
+        x,
+        acpt_rate_deepsara_aux,
+        acpt_rate_deepsara_modified_aux,
+        me_acpt_rate_deepsara,
+        me_acpt_rate_deepsara_modified,
+        "ACCEPTANCE_RATE",
+    )
+
+    # Resource Utilization v/s episode
+    plot_comparison(
+        x,
+        res_utl_deepsara_aux,
+        res_utl_deepsara_modified_aux,
+        me_utl_deepsara,
+        me_utl_deepsara_modified,
+        "RESOURCE_UTILIZATION",
+    )
+
+    return
+    # DELAY
+    plot_comparison(
+        x,
+        deepsara_total_delay_aux,
+        deepsara_modified_total_delay_aux,
+        me_delay_deepsara,
+        me_delay_deepsara_modified,
+        "DELAY",
+    )
+
+    # embb Delay
+    plot_comparison(
+        x,
+        deepsara_embb_delay_aux,
+        deepsara_modified_embb_delay_aux,
+        me_delay_embb,
+        me_delay_embb_modified,
+        "EMBB_DELAY",
+    )
+
+    # urllc Delay
+    plot_comparison(
+        x,
+        deepsara_urllc_delay_aux,
+        deepsara_modified_urllc_delay_aux,
+        me_delay_urllc,
+        me_delay_urllc_modified,
+        "URLLC_DELAY",
+    )
+
+    # miot delay
+    plot_comparison(
+        x,
+        deepsara_miot_delay_aux,
+        deepsara_modified_miot_delay_aux,
+        me_delay_miot,
+        me_delay_miot_modified,
+        "MIOT_DELAY",
+    )
 
 # Centralized nodes Utilization
-plt.errorbar(
-    x,
-    res_centralutl_deepsara_modified_aux,
-    yerr=me_centralutl_deepsara_modified,
-    fmt="-",
-    label="DEEPSARA_MODIFIED",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
+plot_comparison(
     x,
     res_centralutl_deepsara_aux,
-    yerr=me_centralutl_deepsara,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
+    res_centralutl_deepsara_modified_aux,
+    me_centralutl_deepsara,
+    me_centralutl_deepsara_modified,
+    "CENTRALIZED_NODES_RES_UTL",
 )
-# plt.errorbar(x,acpt_rate_aar_aux,yerr = margin_error6,fmt="-",label="no NR ", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("Centralized CPU Utilization")
-plt.title("Time Step Centralized Resource Utilization")
-plt.legend()
-# plt.show()
-plt.savefig(
-    "Output_Plots\\time_step_centralutl_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + ".png"
-)
-plt.close()
 
 # Edge nodes Utilization
-plt.errorbar(
-    x,
-    res_edgeutl_deepsara_modified_aux,
-    yerr=me_edgeutl_deepsara_modified,
-    fmt="-",
-    label="DEEPSARA_MODIFIED",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
+plot_comparison(
     x,
     res_edgeutl_deepsara_aux,
-    yerr=me_edgeutl_deepsara,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
+    res_edgeutl_deepsara_modified_aux,
+    me_edgeutl_deepsara,
+    me_edgeutl_deepsara_modified,
+    "EDGE_NODES_RES_UTL",
 )
-# plt.errorbar(x,acpt_rate_aar_aux,yerr = margin_error6,fmt="-",label="no NR ", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("Edge CPU Utilization")
-plt.title("Time Step Edge Resource Utilization")
-plt.legend()
-# plt.show()
-plt.savefig(
-    "Output_Plots\\time_step_edgeutl_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + ".png"
-)  #
-plt.close()
 
 # BW Utilization
-plt.errorbar(
-    x,
-    bw_utl_deepsara_modified_aux,
-    yerr=me_bwutl_deepsara_modified,
-    fmt="-",
-    label="DEEPSARA_MODIFIED",
-    color="blue",
-    ecolor="lightgray",
-    capsize=2,
-)
-plt.errorbar(
+plot_comparison(
     x,
     bw_utl_deepsara_aux,
-    yerr=me_bwutl_deepsara,
-    fmt="-",
-    label="DEEPSARA",
-    color="red",
-    ecolor="lightgray",
-    capsize=2,
+    bw_utl_deepsara_modified_aux,
+    me_bwutl_deepsara,
+    me_bwutl_deepsara_modified,
+    "BW_UTL",
 )
-# plt.errorbar(x,bw_utl_aar_aux,yerr = me_bwutl_aar,fmt="-",label="AAR", color="gray",ecolor="lightgray",capsize=2)
-plt.xlabel("Episodes")
-plt.ylabel("Bandwidth Utilization")
-# plt.title('Time Step Bandwidth Utilization')
-plt.legend()
-# plt.show()
-plt.savefig(
-    "Output_Plots\\time_step_bwutl_EPISODES_"
-    + episodes
-    + "_REP"
-    + repetitions
-    + ".png",
-    bbox_inches="tight",
-)  #
-plt.close()
 
+def plot_graphs_arrival_rate():
+    plt.axvline(x=12, color = "silver", linestyle='--')
+    plt.errorbar(x,acpt_rate_embb_deepsara_aux,yerr = me_acpt_rate_embb_modified,fmt="-",label="eMBB",color='orange',ecolor="lightgray",capsize=2)
+    plt.errorbar(x,acpt_rate_urllc_deepsara_aux,yerr = me_acpt_rate_urllc_modified,fmt="-",label="URLLC",ecolor="lightgray",capsize=2)
+    plt.errorbar(x,acpt_rate_miot_deepsara_aux,yerr = me_acpt_rate_miot_modified,fmt="-",label="MIoT",color='#00d63d',ecolor="lightgray",capsize=2)
+    plt.xlabel('Episodes')
+    plt.ylabel('Acceptance rate')
+    plt.legend(fontsize = 14,loc="lower right", shadow=True)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, 0.1), fancybox=True, shadow=True, ncol=3)
+    plt.savefig("acptxreqtype_"+arrival_rate+"_"+topologies[0]+".jpg",bbox_inches = 'tight')
+    plt.close()
 
+plot_graphs_arrival_rate()
+plot_graphs_episodes()
+plot_all()
 # # # Resource Utilization discriminado x tipo de node
 # plt.axvline(x=12, color = "silver", linestyle='--')
 # plt.errorbar(x,res_utl_rl_aux,yerr = me_utl_rl,fmt="-",label="Total",ecolor="lightgray",capsize=2)

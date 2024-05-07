@@ -3,6 +3,8 @@
 # TODO: Delay or latency
 # TODO: Check if reward from servicing 'n' nodes of higher priority is better than servicing 'n' nodes of lower priority
 
+
+# TODO: Title
 # TODO: URGENT: How is it allocating resources.
 import numpy as np
 import random
@@ -13,11 +15,13 @@ import substrate_graphs
 import calculate_metrics_modified
 import copy
 import ql
-import dql
+import dql_modified as dql
 
 # import telegram_bot as bot
 import time
 import config
+
+substrate_graph = config.substrate_12
 
 # import bisect
 # simulation parameters
@@ -33,7 +37,8 @@ embb_arrival_rate = 0
 urllc_arrival_rate = 0
 miot_arrival_rate = 0
 # TODO: Poisson distribution see for arrival rate
-arrival_rates = [20]  # [100,80,60,40,30,25,20,15,10,7,5,3,1] #20
+arrival_rates = [20] 
+# arrival_rates = [100,80,60,40,30,25,20,15,10,7,5,3,1] #20
 
 mean_operation_time = 15
 
@@ -221,9 +226,6 @@ class Sim:
     def set_run_till(self, t):
         self.run_till = t
 
-    # def set_substrate(self,substrate):
-    #     self.substrate = substrate
-
     def create_event(self, tipo, inicio, extra=None, f=None):
         if inicio < self.horario:
             print("***false")
@@ -294,7 +296,7 @@ class Sim:
         if len(self.eventos) == 0:
             return None
         else:
-            p = self.eventos.pop(0)
+            p = self.eventos.pop(0)  # get events one by one
             self.horario = p.inicio
             return p
 
@@ -410,6 +412,9 @@ def prioritizer(window_req_list, action_index):  # v2
     # TODO: Include the arrival time of the requests to check properly against the baseline paper
     # TODO: [EXTENDED] -> incorporate request service time maybe
     # print("****prioritizing...")
+
+    # [PRIORITY OF DIFFERENT TYPE OF REQUESTS IN DIFFERENT STATES IS DIFFERENT]
+    # [THIS PRIORITY WEIGHT IS SELECTED BY THE DQL agent]
     action = actions[action_index]
     action2 = []
     granted_req_list = []
@@ -417,17 +422,24 @@ def prioritizer(window_req_list, action_index):  # v2
 
     # action = (0.75,1,0.25) -> (cant1,cant2,cant3)
     # traducir action en porcentage a cantidades (entero más cercano)
+    # priority, total operational time
+    action2.append([action[0], round(action[0] * len(window_req_list[0])), 0])
     action2.append(
         [action[0], round(action[0] * len(window_req_list[0])), 0]
     )  # [pctg,cant,tipo] ej:[0.75,75,0]
     action2.append([action[1], round(action[1] * len(window_req_list[1])), 1])
     action2.append([action[2], round(action[2] * len(window_req_list[2])), 2])
+    # action2 = [ACTION 2 WINDOW] [[0.75, 3, 0], [1, 3, 1], [0.5, 6, 2]]
 
+    # action2 = [[priority, Number of requests of that type, Type number]]
+    # for i in range(len(window_req_list)):
+    #     print("[WINDOW REQUEST LIST I]", i, len(window_req_list[i]))
+    # print("[ACTION 2 WINDOW]", action2)
     # priority of action in window req list according to the priority in the current action set
 
     # de acuerdo a "action", ordenar "action2"
     action2.sort(key=takeFirst, reverse=True)
-
+    # print("[SORTED ACTION 2 WINDOW]", action2)
     # print("[DEBUG] Actions list", action2)
     # set priority acc to service type of request
     service_type_priority = {}
@@ -436,17 +448,19 @@ def prioritizer(window_req_list, action_index):  # v2
         if window_req_list[j[2]]:
             service_type_priority[window_req_list[j[2]][0].service_type] = j[0]
 
-        if j[0] == 1:
+        if j[0] == 1:  # if priority 1 then all requests are granted
             granted_req_list += window_req_list[j[2]]
 
         else:
             for i in range(len(window_req_list[j[2]])):
-                if i < j[1]:
+                if (
+                    i < j[1]
+                ):  # else grant as many requests as possible according to action2 list
                     granted_req_list.append(window_req_list[j[2]][i])
                 else:
                     remaining_req_list.append(window_req_list[j[2]][i])
 
-    print("[DEBUG] SERVICE TYPE PRIORITY", service_type_priority)
+    # print("[DEBUG] SERVICE TYPE PRIORITY", service_type_priority)
     return service_type_priority, granted_req_list, remaining_req_list  # v6
     # return granted_req_list+remaining_req_list, remaining_req_list #v1
 
@@ -535,6 +549,7 @@ def resource_allocation(cn, service_type_priority):  # cn=controller
 
     for req in sim.granted_req_list:
         # print("**",req.service_type,req.nsl_graph)
+        # print("[REQUEST OPERATION TIME]", req.operation_time)
         sim.attended_reqs += 1
         rejected = nsl_placement.nsl_placement(req, substrate)  # mapping
         if not rejected:
@@ -561,7 +576,7 @@ def resource_allocation(cn, service_type_priority):  # cn=controller
             # Adding up rewards
             reward += reward_node + rew_link * 10
 
-            #delay
+            # delay
             delay = req.end_time - req.incoming_time
             step_total_delay += delay
 
@@ -617,7 +632,7 @@ def resource_allocation(cn, service_type_priority):  # cn=controller
         step_total_delay,
         step_embb_delay,
         step_urllc_delay,
-        step_miot_delay
+        step_miot_delay,
     )
 
 
@@ -797,6 +812,7 @@ def func_arrival(c, evt):  # NSL arrival
     arrival_rate = evt.extra["arrival_rate"]
     service_type = evt.extra["service_type"]
     inter_arrival_time = get_interarrival_time(arrival_rate)
+    # arrivals trigger new arrivals
     s.add_event(
         s.create_event(
             tipo="arrival",
@@ -848,6 +864,7 @@ def func_twindow(c, evt):
         a = evt.extra["action"]
         # print("##agent",agente.last_state," ",agente.last_action)
 
+    # [Remaining request list isn't used anywhere else]
     service_type_priority, sim.granted_req_list, remaining_req_list = prioritizer(
         sim.window_req_list, a
     )  # se filtra la lista de reqs dependiendo de la accion
@@ -868,7 +885,7 @@ def func_twindow(c, evt):
         step_total_delay,
         step_embb_delay,
         step_urllc_delay,
-        step_miot_delay
+        step_miot_delay,
     ) = resource_allocation(c, service_type_priority)
     c.total_profit += step_profit
     c.node_profit += step_node_profit
@@ -882,7 +899,7 @@ def func_twindow(c, evt):
     c.central_utl += step_central_cpu_utl
     c.link_utl += step_links_bw_utl
 
-    #adding delay
+    # adding delay
     c.total_delay += step_total_delay
     c.embb_delay += step_embb_delay
     c.urllc_delay += step_urllc_delay
@@ -1044,14 +1061,13 @@ def main():
             agente = dql.Agent(9, n_actions)
 
             for j in range(episodes):
-                # rewards = [1, 2]
                 agente.handle_episode_start()
 
                 print("\n", "episode:", j, "\n")
                 controller = None
                 controller = Controlador()
                 controller.substrate = copy.deepcopy(
-                    substrate_graphs.get_graph("16node_BA")
+                    substrate_graphs.get_graph(substrate_graph)
                 )  # get substrate
                 # controller.substrate = copy.deepcopy(substrate_graphs.get_graph("abilene")) #get substrate
                 edge_initial = controller.substrate.graph["edge_cpu"]
@@ -1105,7 +1121,7 @@ def main():
 
             # reward = [1]
             # reward = [1, 2]
-            f = open("deepsara_" + str(m) + "_output_modified.txt", "w+")
+            f = open("deepsara_" + str(m) + "_temperature_" + str(config.temperature) + "_output_modified.txt", "w+")
 
             f.write("Repetition: " + str(i) + "\n")
             f.write("**Reward:\n")
@@ -1150,7 +1166,7 @@ def main():
             f.write(str(urllc_utl_rep) + "\n\n")
             f.write("**miot_utl_rep:\n")
             f.write(str(miot_utl_rep) + "\n\n")
-            
+
             f.write("**total_delay_rep:\n")
             f.write(str(total_delay_rep) + "\n\n")
             f.write("**embb_delay_rep:\n")
@@ -1163,6 +1179,7 @@ def main():
             # TODO: Plot these values in graph as given in the paper end
 
     print("[DEEPSARA MODIFIED]")
+
 
 if __name__ == "__main__":
     # bot.sendMessage("Simulation starts!")
